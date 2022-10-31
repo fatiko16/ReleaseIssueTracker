@@ -1,0 +1,63 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+generator client {
+  provider = "prisma-client-js"
+  previewFeatures = ["referentialIntegrity"]
+}
+
+datasource db {
+  provider = "mysql"
+  url = env("DATABASE_URL")
+  referentialIntegrity = "prisma"
+}
+
+
+model Release {
+  id  Int @default(autoincrement()) @id
+  name String 
+  issues Issue[]
+  pausedTCs PausedTC[]
+  createdAt  DateTime   @default(now())
+}
+
+model Issue {
+  id Int @default(autoincrement()) @id
+  name String //Update as description
+  comments Comment[] 
+  isResolved Boolean @default(false) 
+  release Release @relation(fields: [releaseId], references: [id])
+  releaseId Int 
+  createdAt  DateTime   @default(now())
+  updatedAt DateTime @updatedAt @default(now())
+}
+
+
+model Comment {
+  id Int @default(autoincrement()) @id
+  description String 
+  issue Issue @relation(fields: [issueId], references: [id])
+  issueId Int
+  createdAt  DateTime   @default(now())
+  updatedAt DateTime @updatedAt @default(now())
+}
+
+model PauseComment { 
+  id Int @default(autoincrement()) @id
+  description String 
+  pausedTC PausedTC @relation(fields: [pausedTCId], references: [id])
+  pausedTCId Int
+  createdAt  DateTime   @default(now())
+  updatedAt DateTime @updatedAt @default(now())
+
+}
+
+model PausedTC {
+  id Int @default(autoincrement()) @id
+  TCId Int 
+  reason String @default("")
+  pauseComments PauseComment[]
+  release Release @relation(fields: [releaseId], references: [id])
+  releaseId Int 
+  createdAt  DateTime   @default(now())
+  updatedAt DateTime @updatedAt @default(now())
+}
