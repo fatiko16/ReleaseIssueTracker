@@ -19,6 +19,7 @@ export default async function handler(req, res) {
       });
     } catch (error) {
       res.status(404).json({ message: error });
+      console.log(error);
     }
   } else {
     //I can add error type here, it is better to use constant for the task for consistency
