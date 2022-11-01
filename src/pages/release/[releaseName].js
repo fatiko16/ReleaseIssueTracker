@@ -6,7 +6,7 @@ import prisma from "../../db/client";
 import IssuesTable from "../../components/issues-table";
 import PausedTCTable from "../../components/pausedTC-table";
 import Head from "next/head";
-import domain from "../constants/domain";
+import domain from "../../constants/domain";
 
 // Generates `/posts/1` and `/posts/2`
 
