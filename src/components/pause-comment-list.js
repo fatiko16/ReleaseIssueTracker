@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useRouter } from "next/router";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
+import domain from "../constants/domain";
 export default function PauseCommentList({ pauseComments, pausedTCId }) {
   const router = useRouter();
   const [newComment, setNewComment] = useState("");
@@ -15,19 +16,16 @@ export default function PauseCommentList({ pauseComments, pausedTCId }) {
     if (newComment !== null && newComment.length > 0) {
       let response;
       try {
-        response = await fetch(
-          "http://localhost:3000/api/pause-comment/create",
-          {
-            body: JSON.stringify({
-              description: newComment,
-              pausedTCId: pausedTCId,
-            }),
-            headers: {
-              "Content-Type": "application/json",
-            },
-            method: "POST",
-          }
-        );
+        response = await fetch(`${domain}/api/pause-comment/create`, {
+          body: JSON.stringify({
+            description: newComment,
+            pausedTCId: pausedTCId,
+          }),
+          headers: {
+            "Content-Type": "application/json",
+          },
+          method: "POST",
+        });
       } catch (error) {
         console.log(error);
       }
@@ -49,7 +47,7 @@ export default function PauseCommentList({ pauseComments, pausedTCId }) {
 
   async function deleteComment(commentId) {
     try {
-      await fetch("http://localhost:3000/api/pause-comment/delete", {
+      await fetch(`${domain}/api/pause-comment/delete`, {
         body: JSON.stringify({
           id: commentId,
         }),

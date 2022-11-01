@@ -6,6 +6,7 @@ import prisma from "../../db/client";
 import IssuesTable from "../../components/issues-table";
 import PausedTCTable from "../../components/pausedTC-table";
 import Head from "next/head";
+import domain from "../constants/domain";
 
 // Generates `/posts/1` and `/posts/2`
 
@@ -116,7 +117,7 @@ export default function Release({ releaseInfo, issues, pausedTCs }) {
   async function updateReleaseName() {
     if (releaseName !== null && releaseName.length > 0) {
       try {
-        await fetch("http://localhost:3000/api/release/updateName", {
+        await fetch(`${domain}/api/release/updateName`, {
           body: JSON.stringify({
             id: releaseInfo.id,
             newName: releaseName,
@@ -140,7 +141,7 @@ export default function Release({ releaseInfo, issues, pausedTCs }) {
     if (newIssue !== null && newIssue.length > 0) {
       let response;
       try {
-        response = await fetch("http://localhost:3000/api/issue/create", {
+        response = await fetch(`${domain}/api/issue/create`, {
           body: JSON.stringify({
             name: newIssue,
             releaseId: releaseInfo.id,
@@ -179,7 +180,7 @@ export default function Release({ releaseInfo, issues, pausedTCs }) {
       let response;
 
       try {
-        response = await fetch("http://localhost:3000/api/pausedTC/create", {
+        response = await fetch(`${domain}/api/pausedTC/create`, {
           body: JSON.stringify({
             reason: newPausedTCReason,
             tfsId: newPausedTCTFSId,

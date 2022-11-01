@@ -15,7 +15,7 @@ export default function CommentList({ comments, issueId }) {
     if (newComment !== null && newComment.length > 0) {
       let response;
       try {
-        response = await fetch("http://localhost:3000/api/comment/create", {
+        response = await fetch(`${domain}/api/comment/create`, {
           body: JSON.stringify({
             description: newComment,
             issueId: issueId,
@@ -47,7 +47,7 @@ export default function CommentList({ comments, issueId }) {
 
   async function deleteComment(commentId) {
     try {
-      await fetch("http://localhost:3000/api/comment/delete", {
+      await fetch(`${domain}/api/comment/delete`, {
         body: JSON.stringify({
           id: commentId,
         }),

@@ -4,6 +4,7 @@ import { useState } from "react";
 import ReleaseList from "../components/release-list";
 import prisma from "../db/client";
 import { useRouter } from "next/router";
+import domain from "../constants/domain";
 
 export const getStaticProps = async () => {
   let allReleases;
@@ -57,7 +58,7 @@ export default function Home(props) {
     if (releaseInput !== null && releaseInput.length > 0) {
       let response;
       try {
-        response = await fetch("http://localhost:3000/api/release/create", {
+        response = await fetch(`${domain}/api/release/create`, {
           body: JSON.stringify({
             name: name,
           }),

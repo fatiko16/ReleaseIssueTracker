@@ -21,7 +21,7 @@ export default function Issue({ reason, pauseComments, TCId, id }) {
   async function deletePausedTC() {
     let response;
     try {
-      response = await fetch("http://localhost:3000/api/pausedTC/delete", {
+      response = await fetch(`${domain}/api/pausedTC/delete`, {
         body: JSON.stringify({
           id: id,
         }),
@@ -54,7 +54,7 @@ export default function Issue({ reason, pauseComments, TCId, id }) {
       pausedTCId.toString().length > 0
     ) {
       try {
-        response = await fetch("http://localhost:3000/api/pausedTC/update", {
+        response = await fetch(`${domain}/api/pausedTC/update`, {
           body: JSON.stringify({
             id: id,
             pausedTCId: pausedTCId,

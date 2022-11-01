@@ -6,6 +6,7 @@ import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import { useRouter } from "next/router";
 import Button from "./button";
 import Modal from "../components/modal";
+import domain from "../constants/domain";
 
 export default function Issue({ name, isResolved, comments, id }) {
   // const [isModelOpened, setIsModelOpened] = useState(false);
@@ -42,7 +43,7 @@ export default function Issue({ name, isResolved, comments, id }) {
 
   async function handleCheck() {
     try {
-      await fetch("http://localhost:3000/api/issue/update-checkbox", {
+      await fetch(`${domain}/api/issue/update-checkbox`, {
         body: JSON.stringify({
           id: id,
           isResolved: !isChecked,
@@ -62,7 +63,7 @@ export default function Issue({ name, isResolved, comments, id }) {
   async function deleteIssue() {
     let response;
     try {
-      response = await fetch("http://localhost:3000/api/issue/delete", {
+      response = await fetch(`${domain}/api/issue/delete`, {
         body: JSON.stringify({
           id: id,
         }),
@@ -88,7 +89,7 @@ export default function Issue({ name, isResolved, comments, id }) {
     let response;
     if (description !== null && description.length > 0) {
       try {
-        response = await fetch("http://localhost:3000/api/issue/update", {
+        response = await fetch(`${domain}/api/issue/update`, {
           body: JSON.stringify({
             id: id,
             description: description,
