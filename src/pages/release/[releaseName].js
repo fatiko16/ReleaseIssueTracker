@@ -99,6 +99,8 @@ export async function getStaticProps({ params }) {
 }
 
 export default function Release({ releaseInfo, issues, pausedTCs }) {
+  console.log(issues);
+  console.log(pausedTCs);
   const router = useRouter();
   const parameters = router.query;
   const initialReleaseName = parameters.releaseName;
