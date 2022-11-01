@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import { useRouter } from "next/router";
 import Button from "./button";
+import domain from "../constants/domain";
 
 export default function Issue({ reason, pauseComments, TCId, id }) {
   const [showDetails, setShowDetails] = useState(false);
