@@ -130,6 +130,10 @@ export default function Release({ releaseInfo, issues, pausedTCs }) {
       } catch (error) {
         console.log(error);
       }
+      if (!response.ok) {
+        const error = await response.json();
+        console.log(error);
+      }
       setReleaseNameError(null);
       refreshData();
     } else {
@@ -158,6 +162,8 @@ export default function Release({ releaseInfo, issues, pausedTCs }) {
         setNewIssue("");
         setNewIssueError(null);
         refreshData();
+        const error = await response.json();
+        console.log(error);
       } else {
         if (response.status === 400) {
           const errorData = await response.json();
@@ -200,6 +206,8 @@ export default function Release({ releaseInfo, issues, pausedTCs }) {
         setNewPausedTCTFSId("");
         setNewPausedTCError(null);
         refreshData();
+        const error = await response.json();
+        console.log(error);
       } else {
         if (response.status === 400) {
           const errorData = await response.json();
