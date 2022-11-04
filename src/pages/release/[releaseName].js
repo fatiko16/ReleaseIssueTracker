@@ -95,12 +95,11 @@ export async function getStaticProps({ params }) {
   return {
     // Passed to the page component as props
     props: { releaseInfo, issues, pausedTCs },
+    revalidate: 1,
   };
 }
 
 export default function Release({ releaseInfo, issues, pausedTCs }) {
-  console.log(issues);
-  console.log(pausedTCs);
   const router = useRouter();
   const parameters = router.query;
   const initialReleaseName = parameters.releaseName;

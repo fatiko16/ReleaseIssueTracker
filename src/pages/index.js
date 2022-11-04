@@ -2,51 +2,30 @@ import Head from "next/head";
 import Button from "../components/button";
 import { useState } from "react";
 import ReleaseList from "../components/release-list";
-import prisma from "../db/client";
 import { useRouter } from "next/router";
 import domain from "../constants/domain";
+import useSWR from "swr";
 
+async function fetcher() {
+  let allReleases = await fetch(`${domain}/api/release/releases`);
+  allReleases = allReleases.json();
+  return allReleases;
+}
 export const getStaticProps = async () => {
-  let allReleases;
-  try {
-    allReleases = await prisma.release.findMany({
-      select: {
-        id: true,
-        name: true,
-        issues: true,
-        pausedTCs: true,
-      },
-    });
-  } catch (error) {
-    console.log(error);
-  }
-  if (allReleases === undefined) {
-    allReleases = null;
-  }
+  const data = await fetcher();
+  let allReleases = data.releases;
 
-  allReleases.forEach((release) => {
-    release.issues.map((issue) => {
-      issue.updatedAt = Math.floor(issue.updatedAt / 1000);
-      issue.createdAt = Math.floor(issue.createdAt / 1000);
-      return issue;
-    });
-  });
-
-  allReleases.forEach((release) => {
-    release.pausedTCs.map((pausedTC) => {
-      pausedTC.updatedAt = Math.floor(pausedTC.updatedAt / 1000);
-      pausedTC.createdAt = Math.floor(pausedTC.createdAt / 1000);
-      return pausedTC;
-    });
-  });
   return {
     props: {
       allReleases,
     },
+    revalidate: 1,
   };
 };
 
 export default function Home(props) {
+  const { data } = useSWR("/api/release/releases", fetcher);
+
   const router = useRouter();
   const [releaseInput, setReleaseInput] = useState("");
   const [error, setError] = useState(null);
