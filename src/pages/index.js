@@ -4,16 +4,15 @@ import { useState } from "react";
 import ReleaseList from "../components/release-list";
 import { useRouter } from "next/router";
 import domain from "../constants/domain";
-import useSWR from "swr";
+import { getAllReleases } from "../lib/helpers";
 
 async function fetcher() {
-  let allReleases = await fetch(`${domain}/api/release/releases`);
-  allReleases = allReleases.json();
+  let allReleases = await getAllReleases();
   return allReleases;
 }
 export const getStaticProps = async () => {
   const data = await fetcher();
-  let allReleases = data.releases;
+  let allReleases = data;
 
   return {
     props: {
@@ -24,8 +23,6 @@ export const getStaticProps = async () => {
 };
 
 export default function Home(props) {
-  const { data } = useSWR("/api/release/releases", fetcher);
-
   const router = useRouter();
   const [releaseInput, setReleaseInput] = useState("");
   const [error, setError] = useState(null);
