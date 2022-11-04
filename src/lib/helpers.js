@@ -1,3 +1,5 @@
+import prisma from "../db/client";
+
 export async function getAllReleases() {
   let allReleases;
   try {
