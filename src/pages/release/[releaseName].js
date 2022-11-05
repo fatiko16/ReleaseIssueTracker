@@ -103,7 +103,9 @@ export default function Release({ releaseInfo, issues, pausedTCs }) {
   const router = useRouter();
   const parameters = router.query;
   const initialReleaseName = parameters.releaseName;
-  const [releaseName, setReleaseName] = useState(releaseInfo.name);
+  const [releaseName, setReleaseName] = useState(
+    releaseInfo.name ? releaseInfo.name : ""
+  );
   const [releaseNameError, setReleaseNameError] = useState(null);
   const [newIssue, setNewIssue] = useState("");
   const [newIssueError, setNewIssueError] = useState(null);
