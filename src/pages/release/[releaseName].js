@@ -32,7 +32,7 @@ export async function getStaticPaths() {
 
   return {
     paths: releaseIds,
-    fallback: false, // can also be true or 'blocking'
+    fallback: true, // can also be true or 'blocking'
   };
 }
 
