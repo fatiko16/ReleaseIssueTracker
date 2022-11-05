@@ -1,4 +1,5 @@
 import prisma from "../db/client";
+import domain from "../constants/domain";
 
 export async function getAllReleases() {
   let allReleases;
@@ -35,4 +36,20 @@ export async function getAllReleases() {
   });
 
   return allReleases;
+}
+
+export async function getAllReleasesFromAPI() {
+  let releases;
+  try {
+    releases = await fetch(`${domain}/api/release/releases`, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      method: "GET",
+    });
+  } catch (err) {
+    console.log(err);
+  }
+
+  return releases.releases;
 }

@@ -6,6 +6,21 @@ import { useRouter } from "next/router";
 import domain from "../constants/domain";
 import { getAllReleases } from "../lib/helpers";
 
+export async function getAllReleasesFromAPI() {
+  let releases;
+  try {
+    releases = await fetch(`${domain}/api/release/releases`, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+      method: "GET",
+    });
+  } catch (err) {
+    console.log(err);
+  }
+  return releases;
+}
+
 async function fetcher() {
   let allReleases = await getAllReleases();
   return allReleases;
@@ -24,6 +39,7 @@ export const getStaticProps = async () => {
 
 export default function Home(props) {
   const router = useRouter();
+  const [releases, setReleases] = useState(props.allReleases);
   const [releaseInput, setReleaseInput] = useState("");
   const [error, setError] = useState(null);
   const refreshData = () => {
@@ -48,7 +64,10 @@ export default function Home(props) {
       }
       if (response.ok) {
         setError(null);
-        refreshData();
+        setReleaseInput("");
+        const updatedData = await getAllReleasesFromAPI();
+        const releases = await updatedData.json();
+        setReleases(releases.releases);
       } else {
         if (response.status === 400) {
           const errorData = await response.json();
@@ -92,7 +111,7 @@ export default function Home(props) {
           />
         </div>
 
-        <ReleaseList releases={props.allReleases} />
+        <ReleaseList releases={releases} />
       </div>
     </>
   );
