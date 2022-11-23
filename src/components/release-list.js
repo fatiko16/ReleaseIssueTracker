@@ -1,12 +1,7 @@
 import Link from "next/link";
-import Button from "./button";
-const dummyReleases = [
-  "An easy release",
-  "An underdog release that fcks you up",
-  "A long release",
-];
 
 export default function ReleaseList({ releases }) {
+  console.log(releases);
   return (
     <div className="w-8/12 text-start">
       <h2 className="text-yellow-300 font-bold text-2xl mb-2">All Releases</h2>

@@ -2,80 +2,31 @@ import Head from "next/head";
 import Button from "../components/button";
 import { useState } from "react";
 import ReleaseList from "../components/release-list";
-import { useRouter } from "next/router";
 import domain from "../constants/domain";
-import { getAllReleases } from "../lib/helpers";
+import { useAllReleaseData, useAddNewRelease } from "../lib/release";
 
-export async function getAllReleasesFromAPI() {
-  let releases;
-  try {
-    releases = await fetch(`${domain}/api/release/releases`, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-      method: "GET",
-    });
-  } catch (err) {
-    console.log(err);
-  }
-  return releases;
-}
-
-async function fetcher() {
-  let allReleases = await getAllReleases();
-  return allReleases;
-}
-export const getStaticProps = async () => {
-  const data = await fetcher();
-  let allReleases = data;
-
-  return {
-    props: {
-      allReleases,
-    },
-    revalidate: 1,
-  };
-};
-
-export default function Home(props) {
-  const router = useRouter();
-  const [releases, setReleases] = useState(props.allReleases);
+export default function Home() {
+  const {
+    isLoading,
+    isError,
+    data,
+    error: fetchReleaseError,
+  } = useAllReleaseData();
+  const { mutate } = useAddNewRelease();
+  console.log(data);
   const [releaseInput, setReleaseInput] = useState("");
   const [error, setError] = useState(null);
-  const refreshData = () => {
-    router.replace(router.asPath);
-  };
+
+  function resetReleaseInput() {
+    setReleaseInput("");
+    setError(null);
+  }
 
   async function createRelease(name) {
-    if (releaseInput !== null && releaseInput.length > 0) {
-      let response;
-      try {
-        response = await fetch(`${domain}/api/release/create`, {
-          body: JSON.stringify({
-            name: name,
-          }),
-          headers: {
-            "Content-Type": "application/json",
-          },
-          method: "POST",
-        });
-      } catch (error) {
-        console.log(error);
-      }
-      if (response.ok) {
-        setError(null);
-        setReleaseInput("");
-        const updatedData = await getAllReleasesFromAPI();
-        const releases = await updatedData.json();
-        setReleases(releases.releases);
-      } else {
-        if (response.status === 400) {
-          const errorData = await response.json();
-          setError(errorData.message);
-        }
-      }
+    if (releaseInput !== null && releaseInput.trim().length > 0) {
+      mutate(releaseInput, { onSuccess: resetReleaseInput });
     } else {
-      setError("Release name cannot be empty.");
+      setError("Release input cannot be empty");
     }
   }
 
@@ -110,8 +61,10 @@ export default function Home(props) {
             type="button"
           />
         </div>
-
-        <ReleaseList releases={releases} />
+        {isLoading && <p>Releases are loading...</p>}
+        {isError && <p>Something went wrong with fetching releases.</p>}
+        {data && <ReleaseList releases={data.releases} />}
+        {mutate.isLoading && <p>Adding the new release.</p>}
       </div>
     </>
   );

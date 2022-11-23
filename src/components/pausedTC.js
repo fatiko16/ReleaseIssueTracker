@@ -6,81 +6,29 @@ import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import { useRouter } from "next/router";
 import Button from "./button";
 import domain from "../constants/domain";
-
-export default function Issue({ reason, pauseComments, TCId, id }) {
+import { useDeletePausedTC, useUpdatePausedTC } from "../lib/pausedTC";
+export default function PausedTC({ reason, pauseComments, TCId, id }) {
   const [showDetails, setShowDetails] = useState(false);
   const [parent] = useAutoAnimate();
   const router = useRouter();
   const [pausedTCId, setPausedTCId] = useState(TCId);
   const [pauseReason, setPauseReason] = useState(reason);
   const [error, setError] = useState(null);
-
-  const refreshData = () => {
-    router.replace(router.asPath);
-  };
-
-  async function deletePausedTC() {
-    let response;
-    try {
-      response = await fetch(`${domain}/api/pausedTC/delete`, {
-        body: JSON.stringify({
-          id: id,
-        }),
-        headers: {
-          "Content-Type": "application/json",
-        },
-        method: "POST",
-      });
-    } catch (error) {
-      console.log(error);
-    }
-
-    if (response.ok) {
-      refreshData();
-    } else {
-      if (response.status === 400) {
-        const errorData = await response.json();
-        setError(errorData.message);
-      }
-    }
-  }
+  console.log(reason, "reason");
+  console.log(pauseComments, "Pause Comments");
+  console.log(TCId, "TC Id");
+  console.log(id);
+  const { mutate: deletePausedTC } = useDeletePausedTC();
+  const { mutate: updatePausedTC } = useUpdatePausedTC();
 
   async function update() {
-    let response;
-
     if (
       pauseReason !== null &&
       pauseReason.length > 0 &&
       pausedTCId !== null &&
       pausedTCId.toString().length > 0
     ) {
-      try {
-        response = await fetch(`${domain}/api/pausedTC/update`, {
-          body: JSON.stringify({
-            id: id,
-            pausedTCId: pausedTCId,
-            reason: pauseReason,
-          }),
-          headers: {
-            "Content-Type": "application/json",
-          },
-          method: "POST",
-        });
-      } catch (error) {
-        console.log(error);
-      }
-      if (response.ok) {
-        refreshData();
-        setError(null);
-      } else {
-        if (response.status === 400) {
-          const errorData = await response.json();
-          setError(errorData.message);
-        }
-      }
-    } else {
-      setError("Pause Reason or Paused TC id cannot be empty.");
-      return;
+      updatePausedTC({ id: id, reason: pauseReason, pausedTCId: pausedTCId });
     }
   }
 
@@ -89,7 +37,7 @@ export default function Issue({ reason, pauseComments, TCId, id }) {
       <tr>
         <td ref={parent} className="max-w-2xl ">
           <div className="flex items-center gap-4">
-            <button className="text-red-400" onClick={deletePausedTC}>
+            <button className="text-red-400" onClick={() => deletePausedTC(id)}>
               <FontAwesomeIcon icon={faXmark} />
             </button>
             {/* <p className="break-all w-8/12">{reason}</p> */}

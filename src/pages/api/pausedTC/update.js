@@ -13,7 +13,7 @@ export default async function handler(req, res) {
         },
         data: {
           reason: reason,
-          TCId: pausedTCId,
+          TCId: Number(pausedTCId),
         },
       });
     } catch (error) {

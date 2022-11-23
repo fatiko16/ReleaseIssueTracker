@@ -1,45 +1,23 @@
 import { useAutoAnimate } from "@formkit/auto-animate/react";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import CommentList from "./comment-list";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import { useRouter } from "next/router";
 import Button from "./button";
-import Modal from "../components/modal";
 import domain from "../constants/domain";
+import { useDeleteIssue, useUpdateIssue } from "../lib/issue";
 
 export default function Issue({ name, isResolved, comments, id }) {
-  // const [isModelOpened, setIsModelOpened] = useState(false);
+  const [parent] = useAutoAnimate();
+  const router = useRouter();
+
   const [description, setDescription] = useState(name);
   const [showDetails, setShowDetails] = useState(false);
   const [isChecked, setIsChecked] = useState(isResolved);
   const [error, setError] = useState(null);
-  const [parent] = useAutoAnimate();
-  const router = useRouter();
-
-  const refreshData = () => {
-    router.replace(router.asPath);
-  };
-
-  // const closeModal = () => {
-  //   if (isModelOpened) {
-  //     setIsModelOpened(false);
-  //   }
-  //   console.log(isModelOpened);
-  // };
-
-  // useEffect(() => {
-  //   const keyDownHandler = (event) => {
-  //     if (event.key === "Escape") {
-  //       event.preventDefault();
-  //       closeModal();
-  //     }
-  //   };
-  //   document.addEventListener("keydown", keyDownHandler);
-  //   return () => {
-  //     document.removeEventListener("keydown", keyDownHandler);
-  //   };
-  // }, []);
+  const { mutate: deleteIssue } = useDeleteIssue();
+  const { mutate: updateIssue } = useUpdateIssue();
 
   async function handleCheck() {
     try {
@@ -60,60 +38,11 @@ export default function Issue({ name, isResolved, comments, id }) {
     }
   }
 
-  async function deleteIssue() {
-    let response;
-    try {
-      response = await fetch(`${domain}/api/issue/delete`, {
-        body: JSON.stringify({
-          id: id,
-        }),
-        headers: {
-          "Content-Type": "application/json",
-        },
-        method: "POST",
-      });
-    } catch (error) {
-      console.log(error);
-    }
-    if (response.ok) {
-      refreshData();
-    } else {
-      if (response.status === 400) {
-        const errorData = await response.json();
-        setError(errorData.message);
-      }
-    }
-  }
-
-  async function updateIssue() {
-    let response;
+  async function onUpdateIssue() {
     if (description !== null && description.length > 0) {
-      try {
-        response = await fetch(`${domain}/api/issue/update`, {
-          body: JSON.stringify({
-            id: id,
-            description: description,
-          }),
-          headers: {
-            "Content-Type": "application/json",
-          },
-          method: "POST",
-        });
-      } catch (error) {
-        console.log(error);
-      }
-      if (response.ok) {
-        refreshData();
-        setError(null);
-      } else {
-        if (response.status === 400) {
-          const errorData = await response.json();
-          setError(errorData.message);
-        }
-      }
+      updateIssue({ id: id, description: description });
     } else {
-      setError("Issue description cannot be empty.");
-      return;
+      setError("Description cannot be empty!");
     }
   }
 
@@ -121,32 +50,11 @@ export default function Issue({ name, isResolved, comments, id }) {
     <>
       <tr>
         <td ref={parent} className="max-w-2xl">
-          {/* <button onClick={() => setIsModelOpened(true)}>
-          Click Me For the Modal
-        </button>
-        <Modal isOpened={isModelOpened} onClose={() => setIsModelOpened(false)}>
-          <div className="text-center flex flex-col gap-4 text-white">
-            <p className=" mt-6">
-              Are you sure to delete this issue and all comments related to the
-              issue?
-            </p>
-            <div>
-              <button className="mr-4 rounded border w-3/12">Yes</button>
-              <button
-                className="rounded border w-3/12"
-                onClick={() => setIsModelOpened(false)}
-              >
-                Cancel
-              </button>
-            </div>
-          </div>
-        </Modal> */}
-
           <div className="flex items-center gap-4">
-            <button className="text-red-400" onClick={deleteIssue}>
+            <button className="text-red-400" onClick={() => deleteIssue(id)}>
               <FontAwesomeIcon icon={faXmark} />
             </button>
-            {/* <p className="break-all w-8/12">{name}</p> */}
+
             <input
               type="text"
               value={description}
@@ -189,7 +97,7 @@ export default function Issue({ name, isResolved, comments, id }) {
             description="Update"
             type="button"
             className="my-1 text-base text-emerald-700"
-            onClick={() => updateIssue()}
+            onClick={() => onUpdateIssue()}
           />
         </td>
       </tr>

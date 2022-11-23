@@ -3,62 +3,26 @@ import { useState } from "react";
 import { useRouter } from "next/router";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
-import domain from "../constants/domain";
+import {
+  useAddNewPauseComment,
+  useDeletePauseComment,
+} from "../lib/pause-comment";
 export default function PauseCommentList({ pauseComments, pausedTCId }) {
   const router = useRouter();
   const [newComment, setNewComment] = useState("");
   const [newCommentError, setNewCommentError] = useState(null);
 
-  const refreshData = () => {
-    router.replace(router.asPath);
-  };
-  async function addComment() {
-    if (newComment !== null && newComment.length > 0) {
-      let response;
-      try {
-        response = await fetch(`${domain}/api/pause-comment/create`, {
-          body: JSON.stringify({
-            description: newComment,
-            pausedTCId: pausedTCId,
-          }),
-          headers: {
-            "Content-Type": "application/json",
-          },
-          method: "POST",
-        });
-      } catch (error) {
-        console.log(error);
-      }
-      if (response.ok) {
-        setNewComment("");
-        setNewCommentError(null);
-        refreshData();
-      } else {
-        if (response.status === 400) {
-          const errorData = await response.json();
-          setNewCommentError(errorData.message);
-        }
-      }
-    } else {
-      setNewComment("Issue description cannot be empty.");
-      return;
-    }
-  }
+  const { mutate: addComment } = useAddNewPauseComment();
+  const { mutate: deleteComment } = useDeletePauseComment();
 
-  async function deleteComment(commentId) {
-    try {
-      await fetch(`${domain}/api/pause-comment/delete`, {
-        body: JSON.stringify({
-          id: commentId,
-        }),
-        headers: {
-          "Content-Type": "application/json",
-        },
-        method: "POST",
-      });
-      refreshData();
-    } catch (error) {
-      console.log(error);
+  async function onAddComment() {
+    if (newComment !== null && newComment.length > 0) {
+      addComment(
+        { pausedTCId: Number(pausedTCId), description: newComment },
+        { onSuccess: setNewComment("") }
+      );
+    } else {
+      setNewCommentError("Comment cannot be empty!");
     }
   }
 
@@ -98,7 +62,7 @@ export default function PauseCommentList({ pauseComments, pausedTCId }) {
           description="Add Comment"
           type="button"
           className="my-1 text-base text-emerald-700"
-          onClick={() => addComment()}
+          onClick={() => onAddComment()}
         />
       </li>
     </ul>
